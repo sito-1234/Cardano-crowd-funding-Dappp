@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrowdChain - Web3 Crowdfunding</title>
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* Mobile-first base styles */
+    :root {
+      --primary-color: #4285f4;
+      --secondary-color: #34a853;
+      --accent-color: #FFA500;
+      --text-color: #333;
+      --bg-color: #fff;
+      --card-bg: #fff;
+      --footer-bg: #111;
+      --border-radius: 8px;
+      --box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .dark-mode {
+      --primary-color: #8ab4f8;
+      --text-color: #f1f1f1;
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --footer-bg: #000;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      color: var(--text-color);
+      background: var(--bg-color);
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                  url('https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b') no-repeat center center/cover;
+      color: white;
+      padding: 1.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: center;
+    }
+
+    nav {
+      position: absolute;
+      top: 1rem;
+      left: 0;
+      right: 0;
+      padding: 0 1.5rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .brand img {
+      height: 40px;
+      width: auto;
+    }
+
+    .brand strong {
+      font-size: 1.2rem;
+    }
+
+    nav a, .btn {
+      color: white;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.75rem;
+    }
+
+    .nav-links {
+      display: none; /* Hidden on mobile */
+    }
+
+    .btn {
+      border: 1px solid white;
+      border-radius: var(--border-radius);
+      display: inline-block;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background: var(--primary-color);
+      border-color: var(--primary-color);
+    }
+
+    .btn-primary:hover {
+      background: transparent;
+      color: var(--primary-color);
+    }
+
+    .btn-accent {
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    .btn-accent:hover {
+      background: transparent;
+      color: var(--accent-color);
+    }
+
+    .headline h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .headline p {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      max-width: 100%;
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    /* Campaigns Section */
+    .section-title {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title:after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: var(--primary-color);
+      margin: 0.5rem auto 0;
+      border-radius: 2px;
+    }
+
+    .campaigns {
+      padding: 2rem 1.5rem;
+      background: var(--bg-color);
+    }
+
+    .campaign-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .campaign-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 1.25rem;
+      box-shadow: var(--box-shadow);
+      text-align: center;
+      transition: transform 0.3s;
+    }
+
+    .campaign-card img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: var(--border-radius);
+      margin-bottom: 1rem;
+    }
+
+    .progress-container {
+      width: 100%;
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      margin: 1rem 0;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: var(--primary-color);
+      border-radius: 4px;
+    }
+
+    .funding-info {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* No Campaigns State */
+    .no-campaigns {
+      text-align: center;
+      padding: 2rem;
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      box-shadow: var(--box-shadow);
+      grid-column: 1 / -1;
+    }
+
+    .no-campaigns i {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .no-campaigns h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .no-campaigns p {
+      color: var(--text-color);
+      opacity: 0.8;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Stats Section */
+    .stats {
+      padding: 2rem 1.5rem;
+      background: var(--primary-color);
+      color: white;
+      text-align: center;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .stat-item h3 {
+      font-size: 2rem;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Process Section */
+    .process {
+      padding: 2rem 1.5rem;
+      background: var(--bg-color);
+      text-align: center;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .step-icon {
+      width: 60px;
+      height: 60px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      color: white;
+      font-size: 1.5rem;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--footer-bg);
+      color: white;
+      padding: 2rem 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    footer h4 {
+      margin-bottom: 1rem;
+      color: var(--primary-color);
+    }
+
+    footer ul {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    footer ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    footer ul li a {
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s;
+      font-size: 0.9rem;
+    }
+
+    .copyright {
+      padding-top: 1.5rem;
+      margin-top: 1.5rem;
+      border-top: 1px solid #333;
+      text-align: center;
+      grid-column: 1 / -1;
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+    }
+
+    /* Tablet Styles (min-width: 768px) */
+    @media (min-width: 768px) {
+      .headline h1 {
+        font-size: 2.5rem;
+      }
+
+      .btn-group {
+        flex-direction: row;
+        justify-content: center;
+      }
+
+      .campaign-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      footer {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Desktop Styles (min-width: 1024px) */
+    @media (min-width: 1024px) {
+      nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .headline h1 {
+        font-size: 3rem;
+      }
+
+      .headline p {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .campaigns, .stats, .process {
+        padding: 3rem 2rem;
+      }
+
+      .campaign-grid {
+        grid-template-columns: repeat(3, 1fr);
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .steps {
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+
+      footer {
+        grid-template-columns: repeat(4, 1fr);
+        /* max-width: 1200px; */
+        margin: 0 auto;
+        padding: 3rem 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="theme-toggle" id="themeToggle">🌓</button>
+  
+  <header>
+    <nav>
+      <div class="brand">
+        <img src="assets/CROWDCHAIN-removebg-preview 1.svg" alt="CrowdChain Logo">
+        <strong>CROWDCHAIN</strong>
+      </div>
+      <div class="nav-links">
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Projects</a>
+        <a href="#">Connect Wallet</a>
+        <a href="create.html" class="btn btn-primary">Create Campaign</a>
+      </div>
+    </nav>
+    <div class="headline">
+      <h1>SUPPORT CAUSES WITH <span style="color: var(--accent-color)">CRYPTO</span></h1>
+      <p>A decentralized crowdfunding platform built on blockchain technology that empowers creators and backers with transparency, security, and global accessibility.</p>
+      <div class="btn-group">
+        <a href="create.html" class="btn btn-primary">Create Campaign</a>
+        <a href="campaing.html" class="btn btn-accent">Donate Now</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="campaigns">
+    <h2 class="section-title">Popular Campaigns</h2>
+    <div class="campaign-grid" id="campaigns-container">
+      <!-- Campaigns will be loaded dynamically here -->
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <h3>250+</h3>
+        <p>Successful Campaigns</p>
+      </div>
+      <div class="stat-item">
+        <h3>$1.2M</h3>
+        <p>Raised</p>
+      </div>
+      <div class="stat-item">
+        <h3>5,000+</h3>
+        <p>Active Backers</p>
+      </div>
+      <div class="stat-item">
+        <h3>98%</h3>
+        <p>Success Rate</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="process">
+    <h2 class="section-title">How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-icon">
+          <i class="fas fa-lightbulb"></i>
+        </div>
+        <h3>Create</h3>
+        <p>Design your campaign with clear goals and rewards.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">
+          <i class="fas fa-bullhorn"></i>
+        </div>
+        <h3>Promote</h3>
+        <p>Share your project with your community.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">
+          <i class="fas fa-hand-holding-usd"></i>
+        </div>
+        <h3>Fund</h3>
+        <p>Receive contributions in cryptocurrency.</p>
+      </div>
+      <div class="step">
+        <div class="step-icon">
+          <i class="fas fa-rocket"></i>
+        </div>
+        <h3>Launch</h3>
+        <p>Bring your project to life with the funds raised.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>
+      <div class="footer-logo">
+        <img src="assets/CROWDCHAIN-removebg-preview 1.svg" alt="CrowdChain Logo" style="height: 40px;">
+        <strong>CROWDCHAIN</strong>
+      </div>
+      <p>Empowering creators through decentralized crowdfunding.</p>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-discord"></i></a>
+        <a href="#"><i class="fab fa-telegram"></i></a>
+        <a href="#"><i class="fab fa-github"></i></a>
+      </div>
+    </div>
+    <div>
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#">Explore</a></li>
+        <li><a href="#">How it Works</a></li>
+        <li><a href="#">Success Stories</a></li>
+        <li><a href="#">Start a Campaign</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Creator Handbook</a></li>
+        <li><a href="#">Community</a></li>
+        <li><a href="#">Blog</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+      </ul>
+    </div>
+    <div class="copyright">
+      <p>&copy; 2025 CrowdChain. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Load and display campaigns
+    function loadCampaigns() {
+      const container = document.getElementById('campaigns-container');
+      const campaigns = JSON.parse(localStorage.getItem('campaigns')) || [];
+      
+      container.innerHTML = '';
+      
+      if (campaigns.length === 0) {
+        container.innerHTML = `
+          <div class="no-campaigns">
+            <i class="fas fa-archive"></i>
+            <h3>No Campaigns Yet</h3>
+            <p>Be the first to create a campaign and start raising funds!</p>
+            <a href="create.html" class="btn btn-primary">Create First Campaign</a>
+          </div>
+        `;
+      } else {
+        campaigns.forEach(campaign => {
+          const progress = (campaign.raised / campaign.goal) * 100;
+          container.innerHTML += `
+            <div class="campaign-card">
+              <img src="${campaign.image}" alt="${campaign.title}" />
+              <h3>${campaign.title}</h3>
+              <p>${campaign.description}</p>
+              <div class="progress-container">
+                <div class="progress-bar" style="width: ${progress}%"></div>
+              </div>
+              <div class="funding-info">
+                <span>${campaign.raised} ADA Raised</span>
+                <span>${Math.round(progress)}% Funded</span>
+              </div>
+              <a href="campaign.html?id=${campaign.id}" class="btn btn-primary" style="margin-top: 1rem;">View Details</a>
+            </div>
+          `;
+        });
+      }
+    }
+
+    // Theme toggle
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      themeToggle.textContent = document.body.classList.contains('dark-mode') ? '🌞' : '🌓';
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCampaigns();
+      
+      // Set initial theme
+      if (localStorage.getItem('darkMode') === 'true') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '🌞';
+      }
+
+      // Mobile menu toggle would go here
+    });
+  </script>
+</body>
+</html>
